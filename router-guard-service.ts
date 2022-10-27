@@ -3,7 +3,11 @@ import {
   NextContext,
 } from "./typings/router-guards-service";
 import { Route } from "./typings/router-service";
-import { NavigationGuard, NavigationHookAfter, RouteLocationNormalized } from "vue-router";
+
+type RouteLocationNormalized = {};
+type NavigationGuard = {};
+type NavigationHookAfter = (a,b) => {};
+
 
 /**
  * Single Guard Service

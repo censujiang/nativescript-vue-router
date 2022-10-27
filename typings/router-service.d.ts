@@ -2,9 +2,12 @@ import {
     RouterOptions,
     NavigationGuardNext,
 } from 'vue-router';
-import {
-    NavigationEntryVue,
-} from 'nativescript-vue';
+
+export interface NavigationEntryVue extends NavigationEntry {
+    props?: Record<string, any>,
+    frame?: TargetFrame,
+    resolveOnEvent?: "navigatingTo" | "navigatedTo" | string
+}
 
 export type RouteChildren = Route;
 export type ErrorCallback = Error | ((...args: any[]) => void);
@@ -29,6 +32,9 @@ export interface RouteOptions extends NavigationEntryVue {
      * These actions will be dispatched once a particular route is navigated to
      */
     meta?: Record<string, any>;
+    transition?: any
+    context?: any
+    clearHistory?:boolean
 }
 
 export interface Route extends RouteOptions {

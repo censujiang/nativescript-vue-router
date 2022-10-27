@@ -1,4 +1,4 @@
-import Vue from "nativescript-vue";
+import * as Vue from "vue";
 import { Page } from "@nativescript/core/ui/page";
 import { RouterService } from "./router-service";
 
@@ -6,7 +6,7 @@ export default {
   nextCallbacks: [],
 
   mounted() {
-    if (!this.nativeView.eventsSet && this.isPage()) {
+    if (!this.nativeView?.eventsSet && this.isPage()) {
       this.nativeView.eventsSet = true;
 
       // Register all navigation events
@@ -27,7 +27,7 @@ export default {
   },
 
   destroyed() {
-    if (this.nativeView.eventsSet && this.isPage()) {
+    if (this.nativeView?.eventsSet && this.isPage()) {
       this.nativeView.off(Page.navigatedToEvent, this.onNavigatedTo.bind(this));
       this.nativeView.off(
         Page.navigatingToEvent,
@@ -55,7 +55,8 @@ export default {
         data.object.frame.parent.modal
       ) {
         // Preserve instance to execute it on redirection within the context of component's instance
-        (Vue as any).prototype.$modalPage = {
+        const globals = Vue.getCurrentInstance().appContext.config.globalProperties;
+        globals.$modalPage = {
           data,
           instance: this,
         };
@@ -196,7 +197,7 @@ export default {
     },
 
     isPage() {
-      if (this.nativeView.__vuePageRef__) {
+      if (this.nativeView?.__vuePageRef__) {
         return true;
       }
 

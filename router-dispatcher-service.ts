@@ -32,8 +32,8 @@ export class RouterDispatcherService {
     if (!meta || !this.vm) {
       return false;
     }
-
-    if (!this.vm.$store) {
+    
+    if (!this.vm.config.globalProperties.$store) {
       console.error('META DISPATCHER', 'Store not found');
 
       return false;
@@ -54,7 +54,7 @@ export class RouterDispatcherService {
    * @returns {Promise} Dispatched action result
    */
   public dispatch(type: string, payload: unknown): Promise<void> {
-    return this.vm.$store.dispatch(type, payload);
+    return this.vm.config.globalProperties.$store.dispatch(type, payload);
   }
 }
 

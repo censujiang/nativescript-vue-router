@@ -1,4 +1,4 @@
-import type Vue from "nativescript-vue";
+import * as Vue from "vue";
 import {
   NSVueRouterOptions,
   RouterServiceOptions,
@@ -236,7 +236,7 @@ export class RouterService {
    * @param {object} vm The vm instance from component
    * @returns {void}
    */
-  public updateVm(vm: Vue): void {
+  public updateVm(vm: typeof Vue): void {
     this.vm = vm;
   }
 
@@ -284,7 +284,7 @@ export class RouterService {
   public setCurrentRoute(route: Route): void {
     this.currentRoute = route;
 
-    this.vm.$route = Object.assign(this.vm.$route, route);
+    this.vm.config.globalProperties.$route = Object.assign(this.vm.config.globalProperties.$route, route);
   }
 
   /**
@@ -449,14 +449,14 @@ export class RouterService {
 
     // Navigation happens within a modal. Retrigger navigatedFrom event from parent
     // This must happen after callback is allowed to be executed
-    if (this.vm.$modalPage) {
-      const modal = this.vm.$modalPage;
+    if (this.vm.config.globalProperties.$modalPage) {
+      const modal = this.vm.config.globalProperties.$modalPage;
 
       if (modal.instance && modal.data) {
         modal.instance.onNavigatingFrom(modal.data);
       }
 
-      this.vm.$modalPage = null;
+      this.vm.config.globalProperties.$modalPage = null;
     }
 
     if (isNavigatingBack) {
@@ -465,14 +465,14 @@ export class RouterService {
         this.routeBackCallback(newRoute, routeOptions);
       }
 
-      this.vm.$navigateBack(routeOptions);
+      this.vm.config.globalProperties.$navigateBack(routeOptions);
     } else {
       // Ensure that callback is specified
       if (this.routeToCallback) {
         this.routeToCallback(newRoute, routeOptions);
       }
 
-      this.vm.$navigateTo(newRoute.component, routeOptions);
+      this.vm.config.globalProperties.$navigateTo(newRoute.component, routeOptions);
     }
 
     this.setCurrentRoute(newRoute);
