@@ -10,15 +10,17 @@ import {
   NSVueRouterHistory,
 } from "./typings/router-service";
 
-import { RouterGuardsService } from "./router-guards-service";
+import {RouterGuardsService} from "./router-guards-service";
 
-import { Frame } from "@nativescript/core";
+import {Frame} from "@nativescript/core";
 import {
   AfterEachHookCallback,
   BeforeEachGuardCallback,
   BeforeResolveGuardCallback,
   GuardReturnContext,
 } from "./typings/router-guards-service";
+import routerMixin from "./router-mixin";
+import {registerActionDispatcher} from "./router-dispatcher-service";
 
 /**
  * Routing Service
@@ -108,7 +110,7 @@ export class RouterService {
    * @param {RouterService} routerOptions Router Service options
    */
   public constructor(
-    { routes = [] }: NSVueRouterOptions,
+    {routes = []}: NSVueRouterOptions,
     {
       routeToCallback = null,
       routeBackCallback = null,
@@ -130,6 +132,21 @@ export class RouterService {
       to: null,
       from: null,
     });
+  }
+
+  install(app) {
+    const router = this;
+    this.vm = app;
+    const globals = app.config.globalProperties;
+    globals.$routeTo = router.push.bind(router);
+    globals.$routeBack = router.back.bind(router);
+    globals.$router = router;
+    app.provide('$router', router);
+    if (app.mixin) {
+      app.mixin(routerMixin);
+    }
+
+    registerActionDispatcher(router, app);
   }
 
   /**
@@ -263,7 +280,7 @@ export class RouterService {
 
     return (
       this.routes.find(
-        ({ path, name }) => path === routePath || name === routePath
+        ({path, name}) => path === routePath || name === routePath
       ) || null
     );
   }
@@ -416,6 +433,10 @@ export class RouterService {
     options: RouteOptions = {},
     isNavigatingBack = false
   ): void {
+    if(!this.vm){
+      this.logger.error("ROUTER", "The router needs a Vue instance, this can be added in the createRoute method or use app.use(router)");
+      return;
+    }
     if (!this.isValidRoute(route)) {
       return;
     }
