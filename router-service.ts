@@ -11,6 +11,8 @@ import {
 } from "./typings/router-service";
 
 import { RouterGuardsService } from "./router-guards-service";
+
+import { Frame } from "@nativescript/core";
 import {
   AfterEachHookCallback,
   BeforeEachGuardCallback,
@@ -283,8 +285,14 @@ export class RouterService {
    */
   public setCurrentRoute(route: Route): void {
     this.currentRoute = route;
-
-    this.vm.config.globalProperties.$route = Object.assign(this.vm.config.globalProperties.$route, route);
+    if (this.vm.config.globalProperties.$route) {
+      this.vm.config.globalProperties.$route = Object.assign(
+        this.vm.config.globalProperties.$route,
+        route
+      );
+    } else {
+      this.vm.config.globalProperties.$route = route;
+    }
   }
 
   /**
@@ -502,19 +510,14 @@ export class RouterService {
     emptyRouteFallbackPath = null
   ): void {
     let newRoute = this.getPreviousRoute();
-
-    if (
-      !newRoute ||
-      (this.frame.topmost() && this.frame.topmost().backStack.length < 1)
-    ) {
+    if (!newRoute || Frame.topmost()?.backStack.length < 1) {
       const alternativePath =
         emptyRouteFallbackPath || this.routeBackFallbackPath;
-
       if (alternativePath) {
         newRoute = this.getRoute(alternativePath);
 
         options.clearHistory = true;
-
+        console.log(newRoute, options);
         // Perform standard redirection without backwards flag set
         this.navigateTo(newRoute, options);
       }
@@ -525,7 +528,6 @@ export class RouterService {
 
       return;
     }
-
     this.navigateTo(newRoute, options, true);
   }
 
