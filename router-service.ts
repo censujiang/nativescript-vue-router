@@ -19,6 +19,7 @@ import {
   BeforeResolveGuardCallback,
   GuardReturnContext,
 } from "./typings/router-guards-service";
+import RouterView from "./router-view";
 
 /**
  * Routing Service
@@ -480,7 +481,10 @@ export class RouterService {
         this.routeToCallback(newRoute, routeOptions);
       }
 
-      this.vm.config.globalProperties.$navigateTo(newRoute.component, routeOptions);
+      this.vm.config.globalProperties.$navigateTo(
+        newRoute.component,
+        routeOptions
+      );
     }
 
     this.setCurrentRoute(newRoute);
