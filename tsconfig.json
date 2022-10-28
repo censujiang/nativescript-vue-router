@@ -25,12 +25,6 @@
             "es2017",
             "dom"
         ],
-        "plugins": [
-            {
-                "transform": "@nativescript/webpack/transformers/ns-transform-native-classes",
-                "type": "raw"
-            }
-        ]
     },
     "exclude": [
         "demo",
