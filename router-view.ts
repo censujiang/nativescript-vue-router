@@ -4,7 +4,7 @@ const RouterView = {
   props: {
     defaultRoute: {
       type: String,
-      default: "/app",
+      default: "/",
     },
     defaultRouteProps: {
       type: Object,
