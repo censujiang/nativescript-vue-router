@@ -17,7 +17,7 @@ const RouterView = {
     const defaultRoute = globalProperties.$router.getRoute(props.defaultRoute);
     if (!defaultRoute) {
       throw new Error(
-        `router-view: No registered route at path ${props.defaultRoute} found on router`
+        `No registered route at path "${props.defaultRoute}" found on current router`
       );
     }
     globalProperties.$router.setCurrentRoute(defaultRoute);
