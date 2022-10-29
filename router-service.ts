@@ -1,27 +1,26 @@
 import * as Vue from "vue";
 import {
-  NSVueRouterOptions,
-  RouterServiceOptions,
-  RouteOptions,
   ErrorCallback,
+  NSVueRouterHistory,
+  NSVueRouterOptions,
   Route,
   RouteBackCallback,
+  RouteOptions,
+  RouterServiceOptions,
   RouteToCallback,
-  NSVueRouterHistory,
 } from "./typings/router-service";
 
-import {RouterGuardsService} from "./router-guards-service";
+import { RouterGuardsService } from "./router-guards-service";
 
-import {Frame} from "@nativescript/core";
+import { registerActionDispatcher } from "./router-dispatcher-service";
+import routerMixin from "./router-mixin";
+import RouterView from "./router-view";
 import {
   AfterEachHookCallback,
   BeforeEachGuardCallback,
   BeforeResolveGuardCallback,
   GuardReturnContext,
 } from "./typings/router-guards-service";
-import routerMixin from "./router-mixin";
-import {registerActionDispatcher} from "./router-dispatcher-service";
-import RouterView from "./router-view";
 
 /**
  * Routing Service
@@ -111,7 +110,7 @@ export class RouterService {
    * @param {RouterService} routerOptions Router Service options
    */
   public constructor(
-    {routes = []}: NSVueRouterOptions,
+    { routes = [] }: NSVueRouterOptions,
     {
       routeToCallback = null,
       routeBackCallback = null,
@@ -142,7 +141,7 @@ export class RouterService {
     globals.$routeTo = router.push.bind(router);
     globals.$routeBack = router.back.bind(router);
     globals.$router = router;
-    app.provide('$router', router);
+    app.provide("$router", router);
     if (app.mixin) {
       app.mixin(routerMixin);
     }
@@ -281,7 +280,7 @@ export class RouterService {
 
     return (
       this.routes.find(
-        ({path, name}) => path === routePath || name === routePath
+        ({ path, name }) => path === routePath || name === routePath
       ) || null
     );
   }
@@ -431,11 +430,16 @@ export class RouterService {
    */
   private navigateTo(
     route: Route | string,
-    options: RouteOptions = {},
+    options: RouteOptions = {
+      frame: "default",
+    },
     isNavigatingBack = false
   ): void {
-    if(!this.vm){
-      this.logger.error("ROUTER", "The router needs a Vue instance, this can be added in the createRoute method or use app.use(router)");
+    if (!this.vm) {
+      this.logger.error(
+        "ROUTER",
+        "The router needs a Vue instance, this can be added in the createRoute method or use app.use(router)"
+      );
       return;
     }
     if (!this.isValidRoute(route)) {
@@ -531,11 +535,13 @@ export class RouterService {
    * @returns {void}
    */
   private navigateBack(
-    options: RouteOptions = {},
+    options: RouteOptions = {
+      frame: "default",
+    },
     emptyRouteFallbackPath = null
   ): void {
     let newRoute = this.getPreviousRoute();
-    if (!newRoute || Frame.topmost()?.backStack.length < 1) {
+    if (!newRoute || this.frame.topmost()?.backStack.length < 1) {
       const alternativePath =
         emptyRouteFallbackPath || this.routeBackFallbackPath;
       if (alternativePath) {
