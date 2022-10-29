@@ -3,6 +3,8 @@ import {
     NavigationGuardNext,
 } from 'vue-router';
 
+type TargetFrame = string | Frame;
+
 export interface NavigationEntryVue extends NavigationEntry {
     props?: Record<string, any>,
     frame?: TargetFrame,

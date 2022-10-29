@@ -2,6 +2,10 @@ import { getCurrentInstance, h } from "vue";
 
 const RouterView = {
   props: {
+    id: {
+      type: String,
+      default: "default",
+    },
     defaultRoute: {
       type: String,
       default: "/",
@@ -21,10 +25,13 @@ const RouterView = {
       );
     }
     globalProperties.$router.setCurrentRoute(defaultRoute);
-
     return () => {
-      return h("Frame",
-        h(defaultRoute.component, {props: props.defaultRouteProps})
+      return h(
+        "Frame",
+        {
+          id: props.id,
+        },
+        [h(defaultRoute.component, { props: props.defaultRouteProps })]
       );
     };
   },
