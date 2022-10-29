@@ -23,7 +23,9 @@ const RouterView = {
     globalProperties.$router.setCurrentRoute(defaultRoute);
 
     return () => {
-      return h(defaultRoute.component, { props: props.defaultRouteProps });
+      return h("Frame",
+        h(defaultRoute.component, {props: props.defaultRouteProps})
+      );
     };
   },
 };
