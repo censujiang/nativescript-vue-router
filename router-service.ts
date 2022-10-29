@@ -146,7 +146,7 @@ export class RouterService {
     if (app.mixin) {
       app.mixin(routerMixin);
     }
-    app.component("router-view", RouterView);
+    app.component("RouterView", RouterView);
     registerActionDispatcher(router, app);
   }
 
