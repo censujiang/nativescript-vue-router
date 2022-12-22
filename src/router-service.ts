@@ -303,7 +303,11 @@ export class RouterService {
   public setCurrentRoute(route: Route): void {
     this.currentRoute = route;
     if (this.vm.config.globalProperties.$route) {
-      this.vm.config.globalProperties.$route = {...this.vm.config.globalProperties.$route, ...route};
+      this.vm.config.globalProperties.$route = Object.assign(
+        {},
+        this.vm.config.globalProperties.$route,
+        route
+      );
     } else {
       this.vm.config.globalProperties.$route = route;
     }
