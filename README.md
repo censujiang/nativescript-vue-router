@@ -1,7 +1,7 @@
 # NativeScript Vue Router
 
-[npm-url]: https://npmjs.org/package/nativescript-vue-router-extended
-[npm-image]: http://img.shields.io/npm/v/nativescript-vue-router-extended.svg
+[npm-url]: https://npmjs.org/package/router-vue-native
+[npm-image]: http://img.shields.io/npm/v/router-vue-native.svg
 
 [![NPM version][npm-image]][npm-url] [![Blazing Fast](https://badgen.now.sh/badge/speed/blazing%20%F0%9F%94%A5/green)](https://github.com/MattCCC/nativescript-vue-router-extended) [![Code Coverage](https://badgen.now.sh/badge/coverage/0.00/blue)](https://github.com/MattCCC/nativescript-vue-router-extended) [![npm downloads](https://img.shields.io/npm/dm/nativescript-vue-router-extended.svg?style=flat-square)](http://npm-stat.com/charts.html?package=nativescript-vue-router-extended) [![install size](https://packagephobia.now.sh/badge?p=nativescript-vue-router-extended)](https://packagephobia.now.sh/result?p=nativescript-vue-router-extended)
 
@@ -37,34 +37,118 @@ Nativescript 7.1+ is required for the plugin to run properly. It might be workin
 ## Installation
 
 ```javascript
-ns plugin add nativescript-vue-router-extended
+ns plugin add router-vue-native
 
 or
 
-npm install nativescript-vue-router-extended
+npm install router-vue-native
 
 or
 
-yarn add nativescript-vue-router-extended
+yarn add router-vue-native
 ```
 
-[![NPM](https://nodei.co/npm/nativescript-vue-router-extended.png)](https://npmjs.org/package/nativescript-vue-router-extended)
+[![NPM](https://nodei.co/npm/router-vue-native.png)](https://npmjs.org/package/router-vue-native)
 
 ## Usage & Examples
 
 To use this plugin you need to import it and initialize the router using `createRouter()` function. Global and per component Vue-Router hooks and guards are supported.
+
+# Vue 3 example
+
+### Add your router to vue app
+```ts
+// app.ts
+
+import { createApp } from 'nativescript-vue';
+import App from './App.vue';
+import {router} from "~/plugins/router";
+const app = createApp(App);
+app.use(router)
+app.start();
+```
+
+### Create router
+```ts
+// /plugins/router.ts
+
+import {createRouter} from "router-vue-native";
+import Home from "~/views/Home.vue";
+import Login from "~/views/Login.vue";
+
+const routes = [
+    {
+        path: "/",
+        component: Home,
+    },
+    {
+        path: "/login",
+        component: Login,
+    }
+];
+
+const router = createRouter(
+    {routes},
+);
+
+export {
+    router
+}
+```
+
+### Define the default path of your application
+```vue
+// App.vue
+<template>
+  <RouterView defaultRoute="/login"></RouterView>
+</template>
+
+// OR
+
+<script setup lang="ts">
+const getDefaultRouteExample = () => {
+  if (isLoginUser) {
+    return "/login"
+  } else {
+    return "/"
+  }
+}
+</script>
+<template>
+  <RouterView :defaultRoute="getDefaultRouteExample"></RouterView>
+</template>
+```
+### Use on setup template
+```vue
+<script lang="ts" setup>
+import {useRouter} from "router-vue-native";
+
+// get router
+const router = useRouter();
+
+const onNavigete = () => {
+  // navigate
+  router.push("/your_path")
+}
+
+</script>
+```
+
+## Vue 2 and full options
+
 
 ```javascript
 import Vue from "nativescript-vue";
 import { createRouter } from "nativescript-vue-router-extended";
 
 // Initialize Example Routes
-import moviesPage from "./pages/movies.vue";
+import Home from "./pages/Home.vue";
+import Login from "./pages/Login.vue";
 
 const routes = [
   {
-    path: "/movies",
-    component: moviesPage,
+    path: "/",
+    component: Home,
 
     // Optional
     meta: {
@@ -82,6 +166,10 @@ const routes = [
         showNavigationButtons: null,
       },
     },
+    {
+        path: "/login",
+        component: Login,
+    }
 
     // Optional, per route guards are supported
     // More info: https://next.router.vuejs.org/guide/advanced/navigation-guards.html#per-route-guard
@@ -105,7 +193,7 @@ const router = createRouter(
     // Optional settings below
 
     // Set first page to redirect to when there's no page to redirect back to
-    routeBackFallbackPath: "/movies",
+    routeBackFallbackPath: "/login",
 
     // Do something straight before navigation or adjust NS routing settings
     routeToCallback: (to, options) => {
@@ -121,9 +209,6 @@ const router = createRouter(
     routeBackCallback: (_to, options) => {
       // Do something...
     },
-
-    // Set Vue Instance (Vue.prototype by default)
-    vm: Vue.prototype,
 
     // Set a custom logger (console.log by default)
     logger: console.log,
@@ -158,6 +243,8 @@ this.$routeTo("/movies", {
   },
 });
 ```
+
+
 
 ## New hooks for pages
 
