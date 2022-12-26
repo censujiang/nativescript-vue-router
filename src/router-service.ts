@@ -304,6 +304,7 @@ export class RouterService {
     this.currentRoute = route;
     if (this.vm.config.globalProperties.$route) {
       this.vm.config.globalProperties.$route = Object.assign(
+        {},
         this.vm.config.globalProperties.$route,
         route
       );
