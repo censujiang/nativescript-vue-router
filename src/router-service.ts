@@ -5,6 +5,7 @@ import {
   NSVueRouterOptions,
   Route,
   RouteBackCallback,
+  RouteChildren,
   RouteOptions,
   RouterServiceOptions,
   RouteToCallback,
@@ -124,7 +125,7 @@ export class RouterService {
     this.routeToCallback = routeToCallback;
     this.routeBackCallback = routeBackCallback;
     this.routeBackFallbackPath = routeBackFallbackPath;
-    this.logger = logger || console.log;
+    this.logger = logger || console;
     this.vm = vm;
     this.frame = frame;
 
@@ -278,11 +279,40 @@ export class RouterService {
       routePath = route.name || route.path;
     }
 
-    return (
-      this.routes.find(
-        ({ path, name }) => path === routePath || name === routePath
-      ) || null
-    );
+    // 2. 递归函数：每次只用第一段去 routes 里找，剩下的继续向 children 深入
+    function findRoute(routes: Route[] | RouteChildren[], fullPath: string) {
+      // 去掉开头的斜杠，然后按 "/" 切成段
+      const clean = fullPath.startsWith("/") ? fullPath.slice(1) : fullPath;
+      const segments = clean.split("/");
+
+      for (const r of routes) {
+        // 先按 name 精确匹配
+        if (r.name === fullPath) {
+          return r;
+        }
+
+        // 再按当前这一级的 path（不带 "/") 去匹配第一段
+        const rPath = (r.path || "").startsWith("/")
+          ? r.path.slice(1)
+          : r.path;
+        if (rPath === segments[0]) {
+          // 如果已经是最后一段，就返回当前路由
+          if (segments.length === 1) {
+            return r;
+          }
+          // 否则，拿剩下的部分继续往 children 里找
+          if (r.children) {
+            const nextPath = segments.slice(1).join("/");
+            return findRoute(r.children, nextPath);
+          }
+        }
+      }
+      return null;
+    }
+
+    // 启动递归
+    return findRoute(this.routes, routePath);
+
   }
 
   /**

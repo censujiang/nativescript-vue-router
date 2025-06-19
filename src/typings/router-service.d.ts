@@ -43,7 +43,7 @@ export interface Route extends RouteOptions {
     path: string;
     name?: RouteRecordName | null | undefined;
     component?: Component;
-    children?: RouteChildren;
+    children?: RouteChildren[];
 
     beforeEnter?: (to: Route, from: Route, next?: NavigationGuardNext) => void;
 }
