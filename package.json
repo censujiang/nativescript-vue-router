@@ -1,6 +1,6 @@
 {
-  "name": "router-vue-native",
-  "version": "2.1.0",
+  "name": "@censujiang/router-vue-native",
+  "version": "2.1.1",
   "description": "NativeScript Vue Router Extended for NativeScript Vue hybrid Apps.",
   "main": "./dist/index.js",
   "nativescript": {
