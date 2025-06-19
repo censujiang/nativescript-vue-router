@@ -281,33 +281,42 @@ export class RouterService {
 
     // 2. 递归函数：每次只用第一段去 routes 里找，剩下的继续向 children 深入
     function findRoute(routes: Route[] | RouteChildren[], fullPath: string) {
-      // 去掉开头的斜杠，然后按 "/" 切成段
-      const clean = fullPath.startsWith("/") ? fullPath.slice(1) : fullPath;
-      const segments = clean.split("/");
+      // 去掉前导 slash，并按 "/" 分段
+      const clean = fullPath.replace(/^\/+/, '');
+      const segments = clean === '' ? [] : clean.split('/');
 
       for (const r of routes) {
-        // 先按 name 精确匹配
+        // 1）如果你直接按 name 跳，也能命中
         if (r.name === fullPath) {
           return r;
         }
 
-        // 再按当前这一级的 path（不带 "/") 去匹配第一段
-        const rPath = (r.path || "").startsWith("/")
-          ? r.path.slice(1)
-          : r.path;
-        if (rPath === segments[0]) {
-          // 如果已经是最后一段，就返回当前路由
+        // 2）按当前层级的 path 去匹配第一段
+        const routePath = (r.path || '').replace(/^\/+/, '');
+        if (segments[0] === routePath) {
+          // 2a）整条路径只剩这一段，直接返回
           if (segments.length === 1) {
             return r;
           }
-          // 否则，拿剩下的部分继续往 children 里找
+          // 2b）还有下一级，继续往 children 里找
           if (r.children) {
-            const nextPath = segments.slice(1).join("/");
-            return findRoute(r.children, nextPath);
+            const next = segments.slice(1).join('/');
+            const childFound = findRoute(r.children, next);
+            if (childFound) {
+              return childFound;
+            }
+            // 2c）如果找不到，但 children 里有个空 path（index.vue），就当做兜底
+            const indexRoute = r.children.find(c => c.path === '');
+            if (indexRoute) {
+              return indexRoute;
+            }
           }
         }
       }
-      return null;
+
+      // 3）最外层如果传的是 "/" 或 "" 也可以兜一下
+      const rootIndex = routes.find(r => r.path === '');
+      return rootIndex || null;
     }
 
     // 启动递归
